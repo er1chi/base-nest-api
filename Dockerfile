@@ -9,14 +9,14 @@ WORKDIR /app
 FROM base AS prune
 
 COPY --chown=prop:prop . .
-RUN pnpm dlx turbo prune @propel/server --docker
+RUN pnpm dlx turbo prune @<app>/server --docker
 
 FROM base AS builder
 
 COPY --chown=prop:prop --from=prune /app/out/json/ .
 COPY --chown=prop:prop --from=prune /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY --chown=prop:prop --from=prune /app/out/full/ .
-RUN pnpm install --frozen-lockfile && pnpm run build --filter=@propel/server
+RUN pnpm install --frozen-lockfile && pnpm run build --filter=@<app>/server
 
 FROM gcr.io/distroless/nodejs24-debian12 AS runner
 
